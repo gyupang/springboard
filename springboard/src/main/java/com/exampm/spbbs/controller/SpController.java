@@ -12,6 +12,8 @@ import com.exampm.spbbs.command.SpCommand;
 import com.exampm.spbbs.command.SpDeleteCommand;
 import com.exampm.spbbs.command.SpDetailCommand;
 import com.exampm.spbbs.command.SpListCommand;
+import com.exampm.spbbs.command.SpRelpyCommand;
+import com.exampm.spbbs.command.SpRelpyokCommand;
 import com.exampm.spbbs.command.SpUpdateCommand;
 import com.exampm.spbbs.command.SpUpdateokCommand;
 import com.exampm.spbbs.command.SpWriteCommand;
@@ -48,13 +50,35 @@ public class SpController {
 		return "write";
 	}
 
-	@RequestMapping("/writeok")
+	@RequestMapping(value = "/writeok", method = RequestMethod.POST)
 	public String writeok(HttpServletRequest request, Model model) {
 		System.out.println("writeok");
 
 		model.addAttribute("request", request);
 		command = new SpWriteCommand();
 		command.execute(model);
+		return "redirect:list";
+	}
+
+	@RequestMapping("/reply")
+	public String reply(HttpServletRequest request, Model model) {
+		System.out.println("reply()");
+
+		model.addAttribute("request", request);
+		command = new SpRelpyCommand();
+		command.execute(model);
+
+		return "reply";
+	}
+
+	@RequestMapping(value = "/replyok", method = RequestMethod.POST)
+	public String replyok(HttpServletRequest request, Model model) {
+		System.out.println("replyok()");
+
+		model.addAttribute("request", request);
+		command = new SpRelpyokCommand();
+		command.execute(model);
+
 		return "redirect:list";
 	}
 

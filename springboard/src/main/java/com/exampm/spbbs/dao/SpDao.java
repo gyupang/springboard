@@ -73,6 +73,110 @@ public class SpDao {
 		}
 	}
 
+	// 답글쓰기
+	public SpDto reply(String cNum) {
+		int iNum = Integer.parseInt(cNum);
+		SpDto dto = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = dataSource.getConnection();
+			String sql = "select * from spboard where num = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, iNum);
+			rs = pstmt.executeQuery();
+
+			// dto에 담기
+			if (rs.next()) {
+				dto = new SpDto();
+				int num = rs.getInt("num");
+				int s_group = rs.getInt("s_group");
+				int s_step = rs.getInt("s_step");
+				int s_indent = rs.getInt("s_indent");
+
+				dto.setNum(num);
+				dto.setS_group(s_group);
+				dto.setS_step(s_step);
+				dto.setS_indent(s_indent);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (Exception ee) {
+
+			}
+		}
+
+		return dto;
+	}
+
+	// 답글 등록하기
+	public void replyok(int s_group, int s_step, int s_indent, String uname, String upass, String title,
+			String content) {
+
+		replyUpdate(s_group, s_step);
+
+		String sql = "insert into spboard (s_group, s_step, s_indent, uname, upass, title, content) values (?,?,?,?,?,?,?)";
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, s_group);
+			pstmt.setInt(2, s_step);
+			pstmt.setInt(3, s_indent);
+			pstmt.setString(4, uname);
+			pstmt.setString(5, upass);
+			pstmt.setString(6, title);
+			pstmt.setString(7, content);
+			pstmt.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (Exception ee) {
+			}
+		}
+
+	}
+
+	private void replyUpdate(int s_group, int s_step) {
+		String sql = "update spboard set s_step = s_step + 1 where s_group = ? and s_step >= ?";
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, s_group);
+			pstmt.setInt(2, s_step);
+			pstmt.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (Exception ee) {
+			}
+		}
+	}
+
 	// 글 수정하기
 	public SpDto update(String cNum) {
 		int iNum = Integer.parseInt(cNum);
@@ -121,19 +225,31 @@ public class SpDao {
 	}
 
 	public void updateok(String num, String uname, String upass, String title, String content) {
+
 		int inum = Integer.parseInt(num);
-		String sql = "update spboard set uname=?, upass=?, title=?, content=?, where num=?";
+		String sql = "update spboard set uname=?, upass=?, title=?, content=? where num = ?";
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
+			conn = dataSource.getConnection();
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, uname);
 			pstmt.setString(2, upass);
 			pstmt.setString(3, title);
 			pstmt.setString(4, content);
 			pstmt.setInt(5, inum);
+			pstmt.executeUpdate();
+
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (Exception ee) {
+			}
 		}
 
 	}
@@ -251,7 +367,30 @@ public class SpDao {
 		return dtos;
 	} // list
 
+	public void delete(String num) {
 
+		int iNum = Integer.parseInt(num);
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = dataSource.getConnection();
+			String sql = "delete from spboard where num = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, iNum);
+			pstmt.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (Exception eee) {
+			}
+		}
+	}
 
 	private void hitAdd(int num) {
 		Connection conn = null;

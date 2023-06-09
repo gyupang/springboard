@@ -33,9 +33,10 @@
 	<div class="container">
 		<div class="row justify-content-end px-3 my-5 button-group">
 			<a href="list" class="btn btn-primary">목록보기</a> <a href="write"
-				class="btn btn-primary">글쓰기</a> <a href="list"
-				class="btn btn-primary">답글달기</a> <a href="list"
-				class="btn btn-primary">수정하기</a>
+				class="btn btn-primary">글쓰기</a> <a href="reply?num=${detail.num }"
+				class="btn btn-success">답글달기</a> <a href="update?num=${detail.num }"
+				class="btn btn-danger">수정하기</a> <a href="del?num=${detail.num }"
+				class="btn btn-danger">삭제</a>
 
 
 		</div>
